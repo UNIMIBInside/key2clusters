@@ -1,0 +1,10 @@
+version: "3.3"
+services:
+  redis:
+    image: redislabs/rebloom:latest
+    command: redis-server --requirepass yourpassword --loadmodule /usr/lib/redis/modules/redisbloom.so
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis:/data
+    restart: always
