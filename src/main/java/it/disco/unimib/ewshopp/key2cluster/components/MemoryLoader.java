@@ -1,48 +1,55 @@
 package it.disco.unimib.ewshopp.key2cluster.components;
 
+import com.google.common.hash.BloomFilter;
+import com.google.common.hash.Funnels;
 import io.rebloom.client.Client;
+import it.disco.unimib.ewshopp.key2cluster.ConfigProperties;
 import it.disco.unimib.ewshopp.key2cluster.model.KeyCluster;
 import it.disco.unimib.ewshopp.key2cluster.repository.RedisRepo;
+import lombok.SneakyThrows;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.stereotype.Component;
 import redis.clients.jedis.JedisPool;
+import vlsi.utils.CompactHashMap;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Component
-@Profile("REDIS")
+
 @Log
 public class MemoryLoader implements IClusterLoaders {
 
-    @Autowired
-    private RedisRepo repository;
+    private final ConfigProperties properties;
 
+    public MemoryLoader(ConfigProperties properties) {
+        this.properties = properties;
+    }
+
+    @SneakyThrows
     @Override
-    public boolean loadData() {
+    public void loadData() {
 
-        repository.deleteAll();
-        log.info(String.valueOf(repository.count()));
+        log.info("Creating in-memory dictionary");
 
-        List<String> list = new ArrayList<>();
+        Map<String, String> dictionary = new CompactHashMap<>();
         BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("files/" + properties.getFilename())));
         br.readLine(); //remove header
         String line;
 
-        JedisPool pool = new JedisPool(connectionFactory.getPoolConfig(), connectionFactory.getHostName(), connectionFactory.getPort(), 10000, connectionFactory.getPassword());
-
-        Client client = new Client(pool);
-
-        client.delete("specialBloom");
-        client.createFilter("specialBloom", 350000, 0.001);
+        BloomFilter<String> filter = BloomFilter.create(
+                Funnels.stringFunnel(Charset.defaultCharset()),
+                350000,
+                0.001);
 
         int totEntries = 0;
         while ((line = br.readLine()) != null) {
@@ -52,14 +59,13 @@ public class MemoryLoader implements IClusterLoaders {
             String key = lst.get(0);
             String categories = lst.get(1);
 
-            repository.save(new KeyCluster(key, categories));
-            client.add("specialBloom", key);
+            dictionary.put(key, categories);
+            filter.put(key);
             totEntries += 1;
             if (totEntries % 1000 == 0) log.info("loaded " + totEntries);
         }
 
-        log.info("Loaded " + repository.count() + " keywords");
-    }
-        return false;
+        log.info("Loaded " + dictionary.size() + " keywords");
+
     }
 }
