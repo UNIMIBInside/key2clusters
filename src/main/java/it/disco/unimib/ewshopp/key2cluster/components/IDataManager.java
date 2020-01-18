@@ -6,6 +6,9 @@ public interface IDataManager {
 
     void loadData();
 
+
+    long countKeywords();
+
     KeywordCategories findCategories(String key);
 
 }

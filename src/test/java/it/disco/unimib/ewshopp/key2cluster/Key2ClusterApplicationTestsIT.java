@@ -50,7 +50,7 @@ public class Key2ClusterApplicationTestsIT {
 
 
     @Test
-    public void putTranslationColumnITA() {
+    public void getCategoriesPerKeyword() {
         Response response = given()
                 .contentType(ContentType.JSON)
                 .accept(ContentType.JSON)

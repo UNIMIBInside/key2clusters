@@ -1,7 +1,7 @@
 package it.disco.unimib.ewshopp.key2cluster.components;
 
 import io.rebloom.client.Client;
-import it.disco.unimib.ewshopp.key2cluster.ConfigProperties;
+import it.disco.unimib.ewshopp.key2cluster.configuration.ConfigProperties;
 import it.disco.unimib.ewshopp.key2cluster.model.KeyCluster;
 import it.disco.unimib.ewshopp.key2cluster.model.KeywordCategories;
 import it.disco.unimib.ewshopp.key2cluster.repository.RedisRepo;
@@ -73,6 +73,11 @@ public class RedisDataManager implements IDataManager {
         log.info("Loaded " + repository.count() + " keywords");
 
     }
+    }
+
+    @Override
+    public long countKeywords() {
+        return repository.count();
     }
 
     @Override
