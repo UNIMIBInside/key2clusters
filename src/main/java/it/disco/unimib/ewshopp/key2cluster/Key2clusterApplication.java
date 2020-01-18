@@ -1,7 +1,7 @@
 package it.disco.unimib.ewshopp.key2cluster;
 
-import it.disco.unimib.ewshopp.key2cluster.components.IDataManager;
-import it.disco.unimib.ewshopp.key2cluster.configuration.ConfigProperties;
+import it.disco.unimib.ewshopp.key2cluster.service.IDataManager;
+import it.disco.unimib.ewshopp.key2cluster.configuration.GeneralConfig;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -24,7 +24,7 @@ public class Key2clusterApplication {
 	private Environment environment;
 
 	@Autowired(required = false)
-	private ConfigProperties properties;
+	private GeneralConfig properties;
 
 	public static void main(String[] args) {
 		SpringApplication.run(Key2clusterApplication.class, args);

@@ -1,13 +1,17 @@
-package it.disco.unimib.ewshopp.key2cluster.components;
+package it.disco.unimib.ewshopp.key2cluster.service;
 
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Streams;
+import com.google.common.primitives.Booleans;
 import io.rebloom.client.Client;
-import it.disco.unimib.ewshopp.key2cluster.configuration.ConfigProperties;
-import it.disco.unimib.ewshopp.key2cluster.model.KeyCluster;
+import it.disco.unimib.ewshopp.key2cluster.configuration.GeneralConfig;
+import it.disco.unimib.ewshopp.key2cluster.model.KeywordCategoriesPlain;
 import it.disco.unimib.ewshopp.key2cluster.model.KeywordCategories;
-import it.disco.unimib.ewshopp.key2cluster.repository.RedisRepo;
+import it.disco.unimib.ewshopp.key2cluster.repository.RedisRepository;
 import lombok.SneakyThrows;
 import lombok.extern.java.Log;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.util.Pair;
 import redis.clients.jedis.JedisPool;
 
 import javax.annotation.PostConstruct;
@@ -16,21 +20,23 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 
 @Log
 public class RedisDataManager implements IDataManager {
 
-    private final ConfigProperties properties;
+    private final GeneralConfig properties;
 
-    private final RedisRepo repository;
+    private final RedisRepository repository;
 
     private final Client filter;
 
-    public RedisDataManager(RedisRepo repository, ConfigProperties properties, JedisConnectionFactory connectionFactory) {
+    public RedisDataManager(RedisRepository repository, GeneralConfig properties, JedisConnectionFactory connectionFactory) {
         this.repository = repository;
         this.properties = properties;
         JedisPool pool = new JedisPool(connectionFactory.getPoolConfig(), connectionFactory.getHostName(), connectionFactory.getPort(), 10000, connectionFactory.getPassword());
@@ -64,7 +70,7 @@ public class RedisDataManager implements IDataManager {
             String key = lst.get(0);
             String categories = lst.get(1);
 
-            repository.save(new KeyCluster(key, categories));
+            repository.save(new KeywordCategoriesPlain(key, categories));
             filter.add("specialBloom", key);
             totEntries += 1;
             if (totEntries % 1000 == 0) log.info("loaded " + totEntries);
@@ -81,15 +87,31 @@ public class RedisDataManager implements IDataManager {
     }
 
     @Override
-    public KeywordCategories findCategories(String key) {
+    public KeywordCategories findCategoriesForAKeyword(String key) {
         String clusterCategories = "";
         if (filter.exists("specialBloom",key)){
             clusterCategories = repository.findById(key)
-                    .orElseGet(()->new KeyCluster(key, ""))
+                    .orElseGet(()->new KeywordCategoriesPlain(key, ""))
                     .getCategories();
         }
         List<String> lstCategories = Arrays.stream(clusterCategories.split(","))
                 .map(s->s.trim()).collect(Collectors.toList());
         return new KeywordCategories(key, lstCategories);
     }
+
+    @Override
+    public List<KeywordCategories> findCategoriesForMultiKeyword(Iterable<String> itString) {
+        boolean[] results = filter.existsMulti("specialBloom", Iterables.toArray(itString, String.class));
+
+        return Streams.zip(
+                StreamSupport.stream(itString.spliterator(), false),
+                Booleans.asList(results).stream(),
+                Pair::of
+        ).map(this::generateKeywordCategories)
+        .collect(Collectors.toList());
+
+    }
+
+
+
 }

@@ -3,10 +3,9 @@ package it.disco.unimib.ewshopp.key2cluster;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import it.disco.unimib.ewshopp.key2cluster.components.IDataManager;
+import it.disco.unimib.ewshopp.key2cluster.service.IDataManager;
 import it.disco.unimib.ewshopp.key2cluster.model.KeywordCategories;
 import lombok.extern.java.Log;
-import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -71,7 +70,7 @@ public class Key2ClusterApplicationTestsIT {
                 .accept(ContentType.JSON)
                 .baseUri(baseURI)
                 .pathParam("key", "11 28 cassette")
-                .get("/api/keyword/{key}");
+                .get("key2cluster/api/keyword/{key}");
 
         response.getBody().prettyPrint();
         KeywordCategories kc = response.then().assertThat()

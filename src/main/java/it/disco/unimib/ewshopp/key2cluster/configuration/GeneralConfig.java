@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ConfigProperties {
+public class GeneralConfig {
 
     private String filename;
 

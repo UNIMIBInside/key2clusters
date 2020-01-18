@@ -16,6 +16,9 @@
 
 	<properties>
 		<java.version>1.8</java.version>
+		<docker.image.name>keywordtocluster</docker.image.name>
+		<docker.image.version>1.0.0</docker.image.version>
+		<docker.account.name>XXXX</docker.account.name>
 	</properties>
 
 	<dependencies>
@@ -111,7 +114,81 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>integration-test</id>
+						<goals>
+							<goal>integration-test</goal>
+						</goals>
+						<configuration>
+							<skipTests>true</skipTests>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>com.spotify</groupId>
+				<artifactId>docker-maven-plugin</artifactId>
+				<version>1.2.1</version>
+				<configuration>
+					<imageName>${docker.account.name}/${docker.image.name}:${docker.image.version}</imageName>
+					<dockerDirectory>${project.basedir}/src/main/docker</dockerDirectory>
+					<skipDocker>false</skipDocker>
+					<resources>
+						<resource>
+							<targetPath>/</targetPath>
+							<directory>${project.build.directory}</directory>
+							<include>${project.build.finalName}.jar</include>
+						</resource>
+					</resources>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<version>2.0.0</version>
+				<executions>
+					<execution>
+						<id>download-licenses</id>
+						<goals>
+							<goal>download-licenses</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>default-cli</id>
+						<configuration>
+							<licenseMerges>
+								<licenseMerge>The Apache Software License, Version 2.0|Apache License, Version
+									2.0|Apache Public License 2.0|Apache License 2.0|Apache License, version 2.0|Apache
+									2|Apache 2.0
+								</licenseMerge>
+								<licenseMerge>The Apache Software License, Version 1.1|Apache Software License, Version
+									1.1
+								</licenseMerge>
+								<licenseMerge>The Eclipse Public License, Version 1.0|Eclipse Public License - v
+									1.0|Eclipse Public License 1.0
+								</licenseMerge>
+								<licenseMerge>The MIT License|MIT License</licenseMerge>
+								<licenseMerge>The Lesser General Public License, Version 3.0|Lesser General Public
+									License (LGPL) v 3.0|LGPL v3.0
+								</licenseMerge>
+							</licenseMerges>
+							<sortArtifactByName>true</sortArtifactByName>
+							<excludedScopes>test,runtime</excludedScopes>
+							<includeOptional>false</includeOptional>
+							<useMissingFile>true</useMissingFile>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+
 		</plugins>
+
 	</build>
 
 </project>

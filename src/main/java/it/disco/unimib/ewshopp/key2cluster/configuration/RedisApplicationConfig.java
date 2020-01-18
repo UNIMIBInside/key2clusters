@@ -1,9 +1,8 @@
 package it.disco.unimib.ewshopp.key2cluster.configuration;
 
-import it.disco.unimib.ewshopp.key2cluster.components.IDataManager;
-import it.disco.unimib.ewshopp.key2cluster.components.RedisDataManager;
-import it.disco.unimib.ewshopp.key2cluster.configuration.ConfigProperties;
-import it.disco.unimib.ewshopp.key2cluster.repository.RedisRepo;
+import it.disco.unimib.ewshopp.key2cluster.service.IDataManager;
+import it.disco.unimib.ewshopp.key2cluster.service.RedisDataManager;
+import it.disco.unimib.ewshopp.key2cluster.repository.RedisRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -17,11 +16,11 @@ public class RedisApplicationConfig {
 
     private final JedisConnectionFactory connectionFactory;
 
-    private final ConfigProperties properties;
+    private final GeneralConfig properties;
 
-    private final RedisRepo repository;
+    private final RedisRepository repository;
 
-    public RedisApplicationConfig(JedisConnectionFactory connectionFactory, ConfigProperties properties, RedisRepo repository) {
+    public RedisApplicationConfig(JedisConnectionFactory connectionFactory, GeneralConfig properties, RedisRepository repository) {
         this.connectionFactory = connectionFactory;
         this.properties = properties;
         this.repository = repository;

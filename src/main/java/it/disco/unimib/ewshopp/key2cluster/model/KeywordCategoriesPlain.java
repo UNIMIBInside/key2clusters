@@ -10,7 +10,7 @@ import org.springframework.data.redis.core.RedisHash;
 @NoArgsConstructor
 @AllArgsConstructor
 @RedisHash("keycluster")
-public class KeyCluster {
+public class KeywordCategoriesPlain {
     @Id String keyword;
     String categories;
 }
