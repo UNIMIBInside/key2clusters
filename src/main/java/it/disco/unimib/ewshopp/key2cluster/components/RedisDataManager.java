@@ -1,39 +1,40 @@
 package it.disco.unimib.ewshopp.key2cluster.components;
 
-import com.google.common.hash.BloomFilter;
-import com.google.common.hash.Funnels;
+import io.rebloom.client.Client;
 import it.disco.unimib.ewshopp.key2cluster.ConfigProperties;
+import it.disco.unimib.ewshopp.key2cluster.model.KeyCluster;
 import it.disco.unimib.ewshopp.key2cluster.model.KeywordCategories;
+import it.disco.unimib.ewshopp.key2cluster.repository.RedisRepo;
 import lombok.SneakyThrows;
 import lombok.extern.java.Log;
-import vlsi.utils.CompactHashMap;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import redis.clients.jedis.JedisPool;
 
 import javax.annotation.PostConstruct;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
 @Log
-public class MemoryLoader implements IDataManager {
+public class RedisDataManager implements IDataManager {
 
     private final ConfigProperties properties;
-    private final BloomFilter<CharSequence> filter;
-    private final Map<String, String> dictionary;
 
-    public MemoryLoader(ConfigProperties properties) {
+    private final RedisRepo repository;
+
+    private final Client filter;
+
+    public RedisDataManager(RedisRepo repository, ConfigProperties properties, JedisConnectionFactory connectionFactory) {
+        this.repository = repository;
         this.properties = properties;
-        filter = BloomFilter.create(
-                Funnels.stringFunnel(Charset.defaultCharset()),
-                350000,
-                0.001);
-       dictionary = new CompactHashMap<>();
+        JedisPool pool = new JedisPool(connectionFactory.getPoolConfig(), connectionFactory.getHostName(), connectionFactory.getPort(), 10000, connectionFactory.getPassword());
+        filter = new Client(pool);
     }
 
     @SneakyThrows
@@ -41,14 +42,19 @@ public class MemoryLoader implements IDataManager {
     @PostConstruct
     public void loadData() {
 
-        log.info("Creating in-memory dictionary");
+        if (properties.isRecreateDataStructure()){
+        repository.deleteAll();
+        log.info(String.valueOf(repository.count()));
 
-
+        List<String> list = new ArrayList<>();
         BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("files/" + properties.getFilename())));
         br.readLine(); //remove header
         String line;
 
 
+
+        filter.delete("specialBloom");
+        filter.createFilter("specialBloom", 350000, 0.001);
 
         int totEntries = 0;
         while ((line = br.readLine()) != null) {
@@ -58,21 +64,24 @@ public class MemoryLoader implements IDataManager {
             String key = lst.get(0);
             String categories = lst.get(1);
 
-            dictionary.put(key, categories);
-            filter.put(key);
+            repository.save(new KeyCluster(key, categories));
+            filter.add("specialBloom", key);
             totEntries += 1;
             if (totEntries % 1000 == 0) log.info("loaded " + totEntries);
         }
 
-        log.info("Loaded " + dictionary.size() + " keywords");
+        log.info("Loaded " + repository.count() + " keywords");
 
+    }
     }
 
     @Override
     public KeywordCategories findCategories(String key) {
         String clusterCategories = "";
-        if (filter.mightContain(key)){
-            clusterCategories = dictionary.getOrDefault(key, "");
+        if (filter.exists("specialBloom",key)){
+            clusterCategories = repository.findById(key)
+                    .orElseGet(()->new KeyCluster(key, ""))
+                    .getCategories();
         }
         List<String> lstCategories = Arrays.stream(clusterCategories.split(","))
                 .map(s->s.trim()).collect(Collectors.toList());

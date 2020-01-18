@@ -2,7 +2,7 @@ package it.disco.unimib.ewshopp.key2cluster.components;
 
 import com.google.common.hash.BloomFilter;
 import com.google.common.hash.Funnels;
-import it.disco.unimib.ewshopp.key2cluster.ConfigProperties;
+import it.disco.unimib.ewshopp.key2cluster.configuration.ConfigProperties;
 import it.disco.unimib.ewshopp.key2cluster.model.KeywordCategories;
 import lombok.SneakyThrows;
 import lombok.extern.java.Log;
@@ -21,13 +21,13 @@ import java.util.stream.Stream;
 
 
 @Log
-public class MemoryLoader implements IDataManager {
+public class MemoryDataManager implements IDataManager {
 
     private final ConfigProperties properties;
     private final BloomFilter<CharSequence> filter;
     private final Map<String, String> dictionary;
 
-    public MemoryLoader(ConfigProperties properties) {
+    public MemoryDataManager(ConfigProperties properties) {
         this.properties = properties;
         filter = BloomFilter.create(
                 Funnels.stringFunnel(Charset.defaultCharset()),
@@ -66,6 +66,11 @@ public class MemoryLoader implements IDataManager {
 
         log.info("Loaded " + dictionary.size() + " keywords");
 
+    }
+
+    @Override
+    public long countKeywords() {
+        return dictionary.size();
     }
 
     @Override

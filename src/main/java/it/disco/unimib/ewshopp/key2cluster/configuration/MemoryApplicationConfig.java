@@ -1,7 +1,7 @@
-package it.disco.unimib.ewshopp.key2cluster;
+package it.disco.unimib.ewshopp.key2cluster.configuration;
 
 import it.disco.unimib.ewshopp.key2cluster.components.IDataManager;
-import it.disco.unimib.ewshopp.key2cluster.components.MemoryLoader;
+import it.disco.unimib.ewshopp.key2cluster.components.MemoryDataManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -13,7 +13,7 @@ public class MemoryApplicationConfig {
 
     @Bean
     public IDataManager memoryClusterLoader(ConfigProperties properties){
-        return new MemoryLoader(properties);
+        return new MemoryDataManager(properties);
     }
 
 }

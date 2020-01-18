@@ -1,0 +1,22 @@
+{
+	"info": {
+		"_postman_id": "769190c4-74da-429f-ac93-6cc01ef20564",
+		"name": "keyword2CategoryServer",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "keyword",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": ""
+				},
+				"description": "\t"
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

@@ -1,4 +1,4 @@
-package it.disco.unimib.ewshopp.key2cluster;
+package it.disco.unimib.ewshopp.key2cluster.configuration;
 
 
 import lombok.AllArgsConstructor;

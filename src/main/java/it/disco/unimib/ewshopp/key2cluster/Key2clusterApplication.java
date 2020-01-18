@@ -1,6 +1,6 @@
 package it.disco.unimib.ewshopp.key2cluster;
 
-import it.disco.unimib.ewshopp.key2cluster.components.IClusterLoaders;
+import it.disco.unimib.ewshopp.key2cluster.components.IDataManager;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -17,7 +17,7 @@ import java.util.Objects;
 public class Key2clusterApplication {
 
 	@Autowired(required = false)
-	private IClusterLoaders clusterLoaders;
+	private IDataManager clusterLoaders;
 
 	@Autowired
 	private Environment environment;
@@ -36,7 +36,7 @@ public class Key2clusterApplication {
 			log.info("Selected storage medium: " + environment.getActiveProfiles());
 		}
 
-		clusterLoaders.loadData();
+//		clusterLoaders.loadData();
 
 	}
 }

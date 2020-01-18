@@ -1,7 +1,8 @@
-package it.disco.unimib.ewshopp.key2cluster;
+package it.disco.unimib.ewshopp.key2cluster.configuration;
 
 import it.disco.unimib.ewshopp.key2cluster.components.IDataManager;
 import it.disco.unimib.ewshopp.key2cluster.components.RedisDataManager;
+import it.disco.unimib.ewshopp.key2cluster.configuration.ConfigProperties;
 import it.disco.unimib.ewshopp.key2cluster.repository.RedisRepo;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
