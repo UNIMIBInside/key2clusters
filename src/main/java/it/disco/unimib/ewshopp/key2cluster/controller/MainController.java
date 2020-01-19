@@ -4,6 +4,7 @@ import it.disco.unimib.ewshopp.key2cluster.service.IDataManager;
 import it.disco.unimib.ewshopp.key2cluster.model.KeywordCategories;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -21,6 +22,12 @@ public class MainController {
         return dataManager.findCategoriesForAKeyword(key);
     }
 
+    @GetMapping("/keywords")
+    public List<KeywordCategories> getMultiKeyAsListToCategory(@RequestParam(value = "kws") String keywords){
+
+        List<String> lst = Arrays.asList(keywords.split(","));
+        return getMultiKeyCategory(lst);
+    }
 
     @GetMapping("/keyword")
     public List<KeywordCategories> getMultiKeyCategory(@RequestBody List<String> lstString){
