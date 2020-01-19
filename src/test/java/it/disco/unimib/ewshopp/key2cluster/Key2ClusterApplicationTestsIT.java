@@ -31,7 +31,7 @@ import static org.hamcrest.MatcherAssert.*;
         properties = { "spring.profiles.active=REDIS",
         "spring.redis.host=localhost",
         "spring.redis.password=yourpassword",
-        "spring.redis.port=6379", "keyword.cluster.recreate-data-structure=false"})
+        "spring.redis.port=6379", "keyword.cluster.recreate-data-structure=true"})
 @Log
 public class Key2ClusterApplicationTestsIT {
 
@@ -54,8 +54,8 @@ public class Key2ClusterApplicationTestsIT {
     @ClassRule
     public static DockerComposeContainer compose =
             new DockerComposeContainer(
-                    new File("src/test/docker/docker-compose.yml"))
-                    .withExposedService("redis_1", 6379,  Wait.defaultWaitStrategy());
+                    new File("src/test/docker/docker-compose.yml")).withLocalCompose(true);
+                    //.withExposedService("redis_1", 6379,  Wait.defaultWaitStrategy());
 
 
     @Test
