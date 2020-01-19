@@ -11,6 +11,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.core.env.Environment;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Objects;
 
 @SpringBootApplication
@@ -34,7 +35,7 @@ public class Key2clusterApplication {
 	public void doSomethingAfterStartup() throws IOException {
 		if (Objects.nonNull(properties)) {
 			log.info("Dictionary file name: " + properties.getFilename());
-			log.info("Selected storage medium: " + environment.getActiveProfiles());
+			log.info("Selected profile: " + Arrays.toString(environment.getActiveProfiles()));
 		}
 
 //		clusterLoaders.loadData();

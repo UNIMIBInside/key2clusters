@@ -8,9 +8,9 @@
 		<version>2.2.2.RELEASE</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>it.unimib.ewshopp</groupId>
+	<groupId>it.disco.unimib.ewshopp</groupId>
 	<artifactId>key2cluster</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>key2cluster</name>
 	<description>Service that return for a keyword the semantic clusters it belongs to. </description>
 
@@ -18,7 +18,7 @@
 		<java.version>1.8</java.version>
 		<docker.image.name>keywordtocluster</docker.image.name>
 		<docker.image.version>1.0.0</docker.image.version>
-		<docker.account.name>XXXX</docker.account.name>
+		<docker.account.name>xxx</docker.account.name>
 	</properties>
 
 	<dependencies>
