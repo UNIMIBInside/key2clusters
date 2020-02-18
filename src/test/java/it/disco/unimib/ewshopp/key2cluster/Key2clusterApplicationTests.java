@@ -37,6 +37,30 @@ public  class Key2clusterApplicationTests {
 		baseURI = "http://localhost"; // replace as appropriate
 	}
 
+//	@Test
+//	public void getCategoriesPerMultiKeyword() {
+//
+//		List<String> lstKeyword = new ArrayList<>(2);
+//		lstKeyword.add("11 28 cassette");
+//		lstKeyword.add("casa");
+//		Response response = given()
+//				.contentType(ContentType.JSON)
+//				.accept(ContentType.JSON)
+//				.baseUri(baseURI)
+//				.body(lstKeyword)
+//				.get("key2cluster/api/keyword");
+//
+//		response.getBody().prettyPrint();
+//		KeywordCategories[] kc = response.then().assertThat()
+//				.statusCode(HttpStatus.OK.value())
+//				.extract()
+//				.as(KeywordCategories[].class);
+//		assertThat(kc.length, Matchers.is(2));
+//		assertThat(kc[0].getCategories().size(), Matchers.is(1));
+//		assertThat(kc[0].getCategories(), Matchers.contains("/Ocasiones y regalos/Vacaciones y eventos estacionales/Halloween y 31 de octubre(13740)"));
+//
+//	}
+
 	@Test
 	public void getCategoriesPerMultiKeyword() {
 
@@ -47,8 +71,9 @@ public  class Key2clusterApplicationTests {
 				.contentType(ContentType.JSON)
 				.accept(ContentType.JSON)
 				.baseUri(baseURI)
+				.queryParam("kws", "11 28 cassette,casa")
 				.body(lstKeyword)
-				.get("key2cluster/api/keyword");
+				.get("key2cluster/api/keywords");
 
 		response.getBody().prettyPrint();
 		KeywordCategories[] kc = response.then().assertThat()
@@ -59,6 +84,20 @@ public  class Key2clusterApplicationTests {
 		assertThat(kc[0].getCategories().size(), Matchers.is(1));
 		assertThat(kc[0].getCategories(), Matchers.contains("/Ocasiones y regalos/Vacaciones y eventos estacionales/Halloween y 31 de octubre(13740)"));
 
+
+		Response response2 = given()
+				.contentType(ContentType.JSON)
+				.accept(ContentType.JSON)
+				.baseUri(baseURI)
+				.queryParam("kws", "ciao,parco")
+				.body(lstKeyword)
+				.get("key2cluster/api/keywords");
+
+		response2.getBody().prettyPrint();
+
+
 	}
+
+
 
 }

@@ -55,11 +55,29 @@ public class Key2ClusterApplicationTestsIT {
     public static DockerComposeContainer compose =
             new DockerComposeContainer(
                     new File("src/test/docker/docker-compose.yml")).withLocalCompose(true);
-                    //.withExposedService("redis_1", 6379,  Wait.defaultWaitStrategy());
+    //.withExposedService("redis_1", 6379,  Wait.defaultWaitStrategy());
 
 
     @Test
-    public void testCountkeywords(){
+    public void getCategoriesPerKeywordUTF8() {
+        Response response = given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .baseUri(baseURI)
+                .param("kws", "+bauernhofe +in +niedersachsen")
+                .get("key2cluster/api/keywords");
+
+        response.getBody().prettyPrint();
+        KeywordCategories[] kc = response.then().assertThat()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .as(KeywordCategories[].class);
+        assertThat(kc[0].getCategories().size(), Matchers.is(0));
+
+    }
+
+    @Test
+    public void testCountkeywords() {
         Assert.isTrue(dataManager.countKeywords() == 999, "number of keywords is 999");
     }
 
